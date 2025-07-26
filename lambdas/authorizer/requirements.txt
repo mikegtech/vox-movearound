@@ -1,0 +1,2 @@
+# Function-specific dependencies
+# Common dependencies are in the layer
