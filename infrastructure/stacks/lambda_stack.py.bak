@@ -51,7 +51,7 @@ class LambdaStack(BaseStack):
             code=lambda_.Code.from_asset(
                 os.path.join(os.path.dirname(__file__), "..", "..", "lambdas", "authorizer", "dist")
             ),
-            handler="authorizer.handler.lambda_handler",
+            handler="handler.lambda_handler",
             layers=[common_layer],
             timeout=Duration.seconds(self.config["lambda"]["timeout_seconds"]),
             memory_size=self.config["lambda"]["memory_size"],
@@ -100,7 +100,7 @@ class LambdaStack(BaseStack):
             code=lambda_.Code.from_asset(
                 os.path.join(os.path.dirname(__file__), "..", "..", "lambdas", "api_handler", "dist")
             ),
-            handler="authorizer.handler.lambda_handler",
+            handler="handler.lambda_handler",
             layers=[common_layer],
             timeout=Duration.seconds(self.config["lambda"]["timeout_seconds"]),
             memory_size=self.config["lambda"]["memory_size"],

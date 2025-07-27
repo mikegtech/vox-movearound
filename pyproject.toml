@@ -4,9 +4,17 @@ version = "0.1.0"
 description = "Monorepo for AWS Lambda functions"
 requires-python = ">=3.12"
 
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
 [tool.uv]
 dev-dependencies = [
     "pytest>=7.4.0",
+    "pytest-cov>=4.0.0",
     "black>=23.0.0",
     "ruff>=0.1.0",
     "mypy>=1.5.0",
@@ -15,6 +23,7 @@ dev-dependencies = [
 [tool.ruff]
 line-length = 88
 select = ["E", "F", "I", "N", "W"]
+src = ["src", "lambdas/*/src", "layers/*/src"]
 
 [tool.black]
 line-length = 88
@@ -23,3 +32,6 @@ line-length = 88
 python_version = "3.12"
 warn_return_any = true
 warn_unused_configs = true
+namespace_packages = true
+explicit_package_bases = true
+mypy_path = "src,lambdas/*/src,layers/*/src"
