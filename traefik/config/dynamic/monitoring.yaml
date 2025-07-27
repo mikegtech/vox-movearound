@@ -1,0 +1,24 @@
+# Monitoring endpoints
+http:
+  routers:
+    prometheus:
+      rule: "Path(`/metrics`)"
+      service: prometheus@internal
+      entryPoints:
+        - web
+      middlewares:
+        - auth
+    
+    dashboard:
+      rule: "(PathPrefix(`/api`) || PathPrefix(`/dashboard`))"
+      service: api@internal
+      entryPoints:
+        - web
+      middlewares:
+        - auth
+  
+  middlewares:
+    auth:
+      basicAuth:
+        users:
+          - "admin:$2y$10$..." # Generate with: htpasswd -nb admin password

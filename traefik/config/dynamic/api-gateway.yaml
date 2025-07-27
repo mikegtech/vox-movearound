@@ -1,0 +1,67 @@
+# Dynamic Configuration for API Gateway
+http:
+  routers:
+    api-gateway:
+      rule: "Host(`api.yourdomain.com`)"
+      entryPoints:
+        - websecure
+      service: api-gateway-service
+      tls:
+        certResolver: letsencrypt
+      middlewares:
+        - rate-limit
+        - cors
+        - circuit-breaker
+        - retry
+
+  services:
+    api-gateway-service:
+      loadBalancer:
+        servers:
+          - url: "https://your-api-gateway-id.execute-api.us-east-1.amazonaws.com"
+        healthCheck:
+          path: /health
+          interval: 30s
+          timeout: 5s
+
+  middlewares:
+    rate-limit:
+      rateLimit:
+        average: 100
+        burst: 200
+        period: 1m
+        sourceCriterion:
+          ipStrategy:
+            depth: 2
+
+    cors:
+      headers:
+        accessControlAllowMethods:
+          - GET
+          - POST
+          - PUT
+          - DELETE
+          - OPTIONS
+        accessControlAllowHeaders:
+          - "*"
+        accessControlAllowOriginList:
+          - "*"
+        accessControlMaxAge: 100
+        addVaryHeader: true
+
+    circuit-breaker:
+      circuitBreaker:
+        expression: "NetworkErrorRatio() > 0.5 || ResponseCodeRatio(500, 600, 0, 600) > 0.5"
+        checkPeriod: 10s
+        fallbackDuration: 10s
+        recoveryDuration: 10s
+
+    retry:
+      retry:
+        attempts: 3
+        initialInterval: 100ms
+
+tls:
+  certificates:
+    - certFile: /etc/traefik/certs/cert.pem
+      keyFile: /etc/traefik/certs/key.pem

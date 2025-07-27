@@ -5,6 +5,7 @@ from pathlib import Path
 import aws_cdk as cdk
 from stacks.lambda_stack import LambdaStack
 from stacks.layer_stack import LayerStack
+from stacks.traefik_stack import TraefikStack
 
 # Load configuration
 env = os.getenv("ENVIRONMENT", "dev")
@@ -32,6 +33,7 @@ layer_stack = LayerStack(
     )
 )
 
+
 lambda_stack = LambdaStack(
     app,
     f"{config["company_code"]}-{env}-lambda-stack",
@@ -44,5 +46,20 @@ lambda_stack = LambdaStack(
 )
 
 lambda_stack.add_dependency(layer_stack)
+
+
+# Create Traefik stack
+traefik_stack = TraefikStack(
+    app,
+    f"{config['company_code']}-{env}-traefik-stack",
+    config=config,
+    api_gateway_url=lambda_stack.api_url,  # You'll need to expose this from lambda_stack
+    env=cdk.Environment(
+        account=os.getenv("CDK_DEFAULT_ACCOUNT"),
+        region=config["region"]
+    )
+)
+
+traefik_stack.add_dependency(lambda_stack)
 
 app.synth()

@@ -1,0 +1,33 @@
+# Additional middleware configurations
+http:
+  middlewares:
+    # Security headers
+    security-headers:
+      headers:
+        frameDeny: true
+        sslRedirect: true
+        browserXssFilter: true
+        contentTypeNosniff: true
+        forceSTSHeader: true
+        stsIncludeSubdomains: true
+        stsPreload: true
+        stsSeconds: 315360000
+        customResponseHeaders:
+          X-Forwarded-Proto: https
+    
+    # Compression
+    compress:
+      compress: {}
+    
+    # Request ID
+    request-id:
+      plugin:
+        requestid:
+          headerName: "X-Request-ID"
+    
+    # API Gateway specific headers
+    api-gateway-headers:
+      headers:
+        customRequestHeaders:
+          X-Forwarded-Host: "api.yourdomain.com"
+          X-Real-IP: "true"

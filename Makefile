@@ -59,3 +59,23 @@ compliance-report:
 # Pre-deployment validation
 pre-deploy: lint test governance-check
 	@echo "Pre-deployment validation complete"
+
+# Traefik targets
+.PHONY: build-traefik deploy-traefik test-traefik-local
+
+# Build Traefik Docker image
+build-traefik:
+	docker build -t traefik-proxy:latest traefik/docker/
+
+# Deploy Traefik stack
+deploy-traefik: build-traefik
+	cd infrastructure && cdk deploy $(COMPANY_CODE)-$(ENVIRONMENT)-traefik-stack
+
+# Test Traefik locally
+test-traefik-local:
+	docker network create traefik || true
+	docker-compose -f traefik/docker-compose.yaml up
+
+# Full deployment with Traefik
+deploy-all: build-layer package-lambdas build-traefik
+	cd infrastructure && cdk deploy --all
